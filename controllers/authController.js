@@ -13,19 +13,17 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
-  const cookieOptions = {
+  res.cookie('jwt', token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     httpOnly: true,
-  };
 
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-
-  res.cookie('jwt', token, cookieOptions);
+    secure: req.secure || req.header['x-forwarded-proto'] === 'https',
+  });
 
   // removing password property from user object
   user.password = undefined;
@@ -58,7 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     url,
   ).sendWelcome();
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -100,7 +98,7 @@ exports.login = catchAsync(async (req, res, next) => {
   /* ****************************************************** */
 
   // 3) If everything ok, send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.logout = (req, res) => {
@@ -267,7 +265,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // it will automatically updated by document middleware (pre save hook)
 
   // 4) Log the user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -301,5 +299,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await currentUser.save();
 
   // 4) Log user in, send JWT
-  createSendToken(currentUser, 200, res);
+  createSendToken(currentUser, 200, req, res);
 });
