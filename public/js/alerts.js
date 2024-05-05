@@ -6,12 +6,12 @@ export const hideToaster = function () {
   if (toasterEl) toasterEl.parentElement.removeChild(toasterEl);
 };
 
-export const showToaster = function (type, message) {
+export const showToaster = function (type, message, time = 7) {
   hideToaster();
 
   const markup = `<div class="alert alert--${type}">${message}</div>`;
 
   document.body.insertAdjacentHTML('afterbegin', markup);
 
-  window.setTimeout(hideToaster, 5000);
+  window.setTimeout(hideToaster, time * 1000);
 };

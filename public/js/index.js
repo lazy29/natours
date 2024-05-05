@@ -1,6 +1,7 @@
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
+import { showToaster } from './alerts';
 
 // DOM ELEMENTS
 const loginFormEl = document.querySelector('.form--login');
@@ -78,3 +79,9 @@ if (bookTourBtnEl)
 
     bookTour(tourId);
   });
+
+if (document.body.dataset.alert) {
+  const alertMsg = document.body.dataset.alert;
+
+  showToaster('success', alertMsg, 20);
+}
