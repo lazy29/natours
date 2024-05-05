@@ -69,10 +69,7 @@ const createBookingCheckout = catchAsync(async (session) => {
 
   const user = (await User.findOne({ email: session.customer_email }))._id;
 
-  const price = session.object.amount_total / 100;
-
-  console.log(tour, user, price);
-  console.log(session);
+  const price = session.amount_total / 100;
 
   await Booking.create({ tour, user, price });
 });
