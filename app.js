@@ -17,6 +17,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
@@ -80,6 +81,14 @@ const limiter = rateLimit({
   message: 'Too many request from this IP, please try again in an hour!',
 });
 app.use('/api', limiter);
+
+// STRIPE WEBHOOK
+// receiving post request here because we needed req.body in raw format not in json
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout,
+);
 
 // MIDDLEWARE - Body Parser, parses incoming requests with JSON payloads (for req.body)
 app.use(express.json({ limit: '10Kb' }));
