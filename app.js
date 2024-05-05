@@ -9,6 +9,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -31,6 +32,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // MIDDLEWARE - ORDER MATTERS (order in which code written first come first serve basis)
 // app.use(middlewareFn) :- app.use() - to use middleware || middlewareFn - function for middleware
+
+// Implement CORS
+
+// Access-Control-Allow-Origin *
+app.use(cors());
+
+// api.natours.com, natours.com
+// app.use(cors({ origin: 'https://www.natours.com/' }));
+
+// Responding to options request for preflight phase
+// options is a HTTP verb
+app.options('*', cors());
+
+// for specific route
+// app.options('/api/v1/tours/:id', cors());
 
 // Set security http headers
 app.use(
